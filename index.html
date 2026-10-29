@@ -457,9 +457,46 @@ body.pf-live .pf-projects .pf-reveal.is-visible { transform: translateY(0) rotat
     .pf-arrow-link { transition: none; }
     .pf-cta:hover .pf-arrow, .pf-arrow-link:hover .pf-arrow { animation: none; transform: translateX(4px); }
 }
+
+/* === golden light-streak name reveal intro === */
+#pfIntro { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; background: #08080b; overflow: hidden; }
+html.pf-intro-arm #pfIntro { display: flex; }
+.pf-streak { position: absolute; top: -25%; height: 150%; width: 130px; pointer-events: none; opacity: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(255, 190, 92, 0.55) 35%, rgba(255, 214, 130, 0.95) 50%, rgba(255, 190, 92, 0.55) 65%, transparent 100%);
+    filter: blur(14px); mix-blend-mode: screen; transform: translateX(-60vw) skewX(-18deg);
+    animation: pf-streak-sweep 1.15s cubic-bezier(0.55, 0.06, 0.35, 0.95) forwards; }
+.pf-streak.s2 { width: 60px; filter: blur(8px); animation-duration: 0.95s; animation-delay: 0.35s; }
+.pf-streak.s3 { width: 200px; filter: blur(22px); animation-duration: 1.35s; animation-delay: 0.15s; opacity: 0; }
+.pf-streak.s4 { width: 42px; filter: blur(6px); animation-duration: 0.85s; animation-delay: 0.6s; }
+.pf-streak.s5 { width: 90px; filter: blur(12px); animation-duration: 1.05s; animation-delay: 0.8s; }
+@keyframes pf-streak-sweep { 0% { transform: translateX(-60vw) skewX(-18deg); opacity: 0; } 12% { opacity: 1; } 100% { transform: translateX(130vw) skewX(-18deg); opacity: 0.9; } }
+#pfIntroName { position: relative; z-index: 2; margin: 0; font-family: var(--pf-disp, inherit); font-weight: 800; letter-spacing: -0.03em; line-height: 1;
+    font-size: clamp(44px, 9vw, 96px); color: transparent;
+    background: linear-gradient(100deg, #f7e7c3 0%, #eab957 25%, #fff3d6 50%, #d99a2b 75%, #f7e7c3 100%);
+    background-size: 220% 100%; -webkit-background-clip: text; background-clip: text;
+    opacity: 0; transform: translateY(26px) scale(0.96); filter: drop-shadow(0 0 26px rgba(234, 185, 87, 0.35));
+    animation: pf-name-reveal 0.9s cubic-bezier(0.22, 0.9, 0.3, 1) 0.75s forwards, pf-name-shimmer 1.6s linear 1.5s 2; }
+@keyframes pf-name-reveal { to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes pf-name-shimmer { from { background-position: 200% 0; } to { background-position: -20% 0; } }
+#pfIntroTag { position: absolute; bottom: 12vh; left: 0; right: 0; text-align: center; z-index: 2;
+    font-family: var(--pf-mono, monospace); font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(247, 231, 195, 0.55);
+    opacity: 0; animation: pf-name-reveal 0.7s ease 1.4s forwards; }
+#pfIntro.pf-intro-out { animation: pf-intro-fade 0.55s ease forwards; }
+@keyframes pf-intro-fade { to { opacity: 0; visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { #pfIntro { display: none !important; } }
 </style>
+<script>if(!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)){document.documentElement.classList.add('pf-intro-arm');}</script>
 </head>
 <body>
+<div id="pfIntro" aria-hidden="true">
+    <div class="pf-streak s3" style="left:8%"></div>
+    <div class="pf-streak" style="left:28%"></div>
+    <div class="pf-streak s2" style="left:47%"></div>
+    <div class="pf-streak s4" style="left:63%"></div>
+    <div class="pf-streak s5" style="left:79%"></div>
+    <p id="pfIntroName">Syed Affan</p>
+    <p id="pfIntroTag">python developer &middot; portfolio</p>
+</div>
 <div class="pf-page">
     <section class="pf-hero" id="hero">
         <canvas class="pf-particles" id="pfParticles" aria-hidden="true"></canvas>
@@ -654,7 +691,19 @@ body.pf-live .pf-projects .pf-reveal.is-visible { transform: translateY(0) rotat
 (function () {
     var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var FINE = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    document.body.classList.add('pf-live');
+    var INTRO_ON = document.documentElement.classList.contains('pf-intro-arm');
+    if (!INTRO_ON) { document.body.classList.add('pf-live'); }
+    var pfIntro = document.getElementById('pfIntro');
+    if (INTRO_ON && pfIntro) {
+        var pfIntroDone = function () {
+            if (pfIntro.parentNode) { pfIntro.parentNode.removeChild(pfIntro); }
+            document.documentElement.classList.remove('pf-intro-arm');
+            document.body.classList.add('pf-live');
+        };
+        pfIntro.addEventListener('click', pfIntroDone);
+        setTimeout(function () { if (pfIntro.parentNode) { pfIntro.classList.add('pf-intro-out'); } }, 2500);
+        setTimeout(pfIntroDone, 3150);
+    }
 
     /* name letters */
     if (!REDUCED) {
