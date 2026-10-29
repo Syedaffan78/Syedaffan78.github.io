@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://syedaffan.runs-on.dev/sitemap.xml
