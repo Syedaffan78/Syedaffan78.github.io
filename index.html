@@ -230,7 +230,7 @@ body.pf-live .pf-letter { opacity: 0; transform: translateY(0.55em) rotate(8deg)
 }
 .pf-stat-label { font-family: var(--pf-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--pf-ink-2); }
 @media (max-width: 420px) { .pf-stat-n { font-size: 24px; } }
-.pf-contact { position: relative; display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 22px; font-size: 13px; align-items: center; }
+.pf-contact { position: relative; z-index: 61; display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 22px; font-size: 13px; align-items: center; } /* above .pf-pblur (z-60) so contact details stay crisp over the decorative blur */
 .pf-contact-plain { color: var(--pf-ink-2); padding: 0 4px; }
 .pf-cta {
     display: inline-flex;
@@ -1034,4 +1034,4 @@ html.pf-intro-arm #pfIntro { display: flex; }
 </script>
     <div class="pf-pblur" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </body>
-</html>
+    </html>
