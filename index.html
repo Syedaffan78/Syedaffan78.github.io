@@ -419,7 +419,7 @@ body.pf-live .pf-tl.is-visible .pf-tl-dot, .pf-tl.is-visible .pf-tl-dot { backgr
 .pf-idea-name { margin: 0; font-size: 14px; font-weight: 600; }
 .pf-idea-detail { margin: 4px 0 0; font-size: 12px; line-height: 1.55; color: var(--pf-ink-2); }
 .pf-touch { border-top: 1px solid var(--pf-hair); }
-.pf-touch-row { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 14px 0; border-bottom: 1px solid var(--pf-hair); }
+.pf-touch-row { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 14px 0; border-bottom: 1px solid var(--pf-hair); position: relative; z-index: 61; } /* crisp over .pf-pblur */
 .pf-touch-value { font-size: 14px; font-weight: 500; }
 .pf-foot { margin-top: 34px; padding-top: 16px; border-top: 1px solid var(--pf-hair); font-size: 11px; line-height: 1.6; color: var(--pf-ink-2); }
 body.pf-live .pf-anim-1, body.pf-live .pf-anim-2, body.pf-live .pf-anim-3,
@@ -1034,4 +1034,4 @@ html.pf-intro-arm #pfIntro { display: flex; }
 </script>
     <div class="pf-pblur" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </body>
-    </html>
+</html>
