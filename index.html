@@ -1023,7 +1023,7 @@ html.pf-intro-arm #pfIntro { display: flex; }
         }
         if (typeof IntersectionObserver !== 'undefined') {
             new IntersectionObserver(function (entries) {
-                if (entries[0]) paused = document.hidden || !entries[0].isIntersecting;
+                if (entries[0]) paused = !entries[0].isIntersecting; /* visibility handled separately; headless tabs report hidden */
             }, { threshold: 0 }).observe(canvas);
         }
         document.addEventListener('visibilitychange', onVisibility);
