@@ -442,6 +442,24 @@ body.pf-live .pf-projects .pf-reveal.is-visible { transform: translateY(0) rotat
 .pf-projects .pf-reveal:nth-child(3) { transition-delay: 0.14s; }
 .pf-projects .pf-reveal:nth-child(4) { transition-delay: 0.21s; }
 .pf-projects .pf-reveal:nth-child(5) { transition-delay: 0.28s; }
+/* progressive blur overlay (matching the requested ProgressiveBlur effect) */
+.pf-pblur { position: fixed; left: 0; right: 0; bottom: 0; height: 110px; pointer-events: none; z-index: 60; }
+.pf-pblur > div { position: absolute; inset: 0; }
+.pf-pblur > div:nth-child(1) { backdrop-filter: blur(0.078px); -webkit-backdrop-filter: blur(0.078px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0.0%, rgba(0,0,0,1) 25.0%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0.0%, rgba(0,0,0,1) 25.0%); }
+.pf-pblur > div:nth-child(2) { backdrop-filter: blur(0.156px); -webkit-backdrop-filter: blur(0.156px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 12.5%, rgba(0,0,0,1) 37.5%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 12.5%, rgba(0,0,0,1) 37.5%); }
+.pf-pblur > div:nth-child(3) { backdrop-filter: blur(0.312px); -webkit-backdrop-filter: blur(0.312px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 25.0%, rgba(0,0,0,1) 50.0%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 25.0%, rgba(0,0,0,1) 50.0%); }
+.pf-pblur > div:nth-child(4) { backdrop-filter: blur(0.625px); -webkit-backdrop-filter: blur(0.625px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 37.5%, rgba(0,0,0,1) 62.5%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 37.5%, rgba(0,0,0,1) 62.5%); }
+.pf-pblur > div:nth-child(5) { backdrop-filter: blur(1.25px); -webkit-backdrop-filter: blur(1.25px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 50.0%, rgba(0,0,0,1) 75.0%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 50.0%, rgba(0,0,0,1) 75.0%); }
+.pf-pblur > div:nth-child(6) { backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 62.5%, rgba(0,0,0,1) 87.5%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 62.5%, rgba(0,0,0,1) 87.5%); }
+.pf-pblur > div:nth-child(7) { backdrop-filter: blur(5.0px); -webkit-backdrop-filter: blur(5.0px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 75.0%, rgba(0,0,0,1) 100.0%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 75.0%, rgba(0,0,0,1) 100.0%); }
+.pf-pblur > div:nth-child(8) { backdrop-filter: blur(10.0px); -webkit-backdrop-filter: blur(10.0px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 87.5%, rgba(0,0,0,1) 100%); -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 87.5%, rgba(0,0,0,1) 100%); }
+/* text 3d flip (adapted from Magic UI text-3d-flip, credit @AayushBharti) */
+.pf-name { perspective: 800px; }
+.f3d { display: inline-block; position: relative; transform-style: preserve-3d; }
+.f3d-back { position: absolute; left: 0; top: 0; transform: rotateY(-90deg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.f3d-front { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+#nameA .f3d-back { color: var(--pf-teal-bright); }
+#nameB .f3d-back { color: var(--pf-ink); }
 @media (prefers-reduced-motion: reduce) {
     .pf-orb, .pf-avatar-ring, .pf-avatar-ping, .pf-caret, .pf-term-caret,
     .pf-ticker-track, .pf-ticker-rev, .pf-term-wrap, .pf-stat-n.is-done { animation: none !important; }
@@ -486,6 +504,7 @@ html.pf-intro-arm #pfIntro { display: flex; }
 @media (prefers-reduced-motion: reduce) { #pfIntro { display: none !important; } }
 </style>
 <script>if(!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)){document.documentElement.classList.add('pf-intro-arm');}</script>
+    <!-- Effects adapted from user-supplied references: Floating3DParticles (canvas field) and Magic UI text-3d-flip (credit @AayushBharti); progressive-blur treatment is a matching effect. -->
 </head>
 <body>
 <div id="pfIntro" aria-hidden="true">
@@ -723,6 +742,47 @@ html.pf-intro-arm #pfIntro { display: flex; }
         });
     }
 
+    /* text 3d flip on the name (adapted from Magic UI text-3d-flip, credit @AayushBharti) */
+    var flipName = document.querySelector('.pf-name');
+    if (!REDUCED && flipName && FINE) {
+        var flipChars = [];
+        ['nameA', 'nameB'].forEach(function (id) {
+            var host = document.getElementById(id);
+            if (!host) return;
+            Array.prototype.slice.call(host.children).forEach(function (letter) {
+                var wrap = document.createElement('span');
+                wrap.className = 'f3d';
+                host.insertBefore(wrap, letter);
+                letter.classList.add('f3d-front');
+                wrap.appendChild(letter);
+                var back = document.createElement('span');
+                back.className = 'f3d-back';
+                back.setAttribute('aria-hidden', 'true');
+                back.textContent = letter.textContent;
+                wrap.appendChild(back);
+                flipChars.push(wrap);
+            });
+        });
+        var flipping = false;
+        flipName.addEventListener('mouseenter', function () {
+            if (flipping) return;
+            flipping = true;
+            var STAGGER = 50, DUR = 450;
+            flipChars.forEach(function (c, i) {
+                c.style.transition = 'transform ' + DUR + 'ms cubic-bezier(0.22, 1.2, 0.36, 1) ' + (i * STAGGER) + 'ms';
+                c.style.transform = 'rotateY(90deg)';
+            });
+            setTimeout(function () {
+                flipChars.forEach(function (c) {
+                    c.style.transition = 'none';
+                    c.style.transform = 'rotateY(0deg)';
+                });
+                void flipName.offsetWidth;
+                flipping = false;
+            }, DUR + STAGGER * (flipChars.length - 1) + 80);
+        });
+    }
+
     /* typewriter */
     var PHRASES = ['python full-stack developer', 'flask · sql', 'open to roles in hyderabad'];
     var typedEl = document.getElementById('typedText');
@@ -889,87 +949,89 @@ html.pf-intro-arm #pfIntro { display: flex; }
         });
     }
 
-    /* particles */
+    /* floating 3D particles - adapted from the user's Floating3DParticles reference */
     var canvas = document.getElementById('pfParticles');
     if (!REDUCED && canvas && canvas.getContext) {
         var ctx = canvas.getContext('2d');
-        var w = 0, h = 0, dots = [];
-        var dpr = Math.min(2, window.devicePixelRatio || 1);
-        var pointer = { x: -9999, y: -9999 };
+        var QUANTITY = 400, P_SIZE = 5, P_OPACITY = 0.3, DRIFT = 0.8, DEPTH = 0.5;
+        var MOBILE_BREAKPOINT = 768, SPREAD_FACTOR = 1.2, MAX_DPR = 2;
+        var P_RGB = '62,207,148'; /* site accent green */
+        var w = 0, h = 0, particles = [], paused = false;
+        var dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, MAX_DPR));
+        var t = Math.max(0, Math.min(1, DEPTH));
+        var fov = 800 - t * 600;
+        var perspectiveDistance = 100 + t * 700;
+        var depthRange = t * Math.min(400, fov + perspectiveDistance - 1);
+        var spawn = function () {
+            var sizeVar = P_SIZE * 0.4, opVar = 0.2;
+            return {
+                angle: Math.random() * Math.PI * 2,
+                radius: Math.random() * Math.max(w, h) * SPREAD_FACTOR,
+                y: (Math.random() - 0.5) * h * 2,
+                size: Math.max(0.5, P_SIZE - sizeVar + Math.random() * sizeVar * 2),
+                angularSpeed: 0.0015 + Math.random() * 0.001,
+                opacity: Math.min(1, Math.max(0, P_OPACITY - opVar + Math.random() * opVar * 2)),
+                screenX: 0, screenY: 0, projectedScale: 1
+            };
+        };
+        var draw = function (p) {
+            var r = Math.max(0, p.size * p.projectedScale);
+            if (r <= 0) return;
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(' + P_RGB + ',' + p.opacity.toFixed(3) + ')';
+            ctx.arc(p.screenX, p.screenY, r, 0, Math.PI * 2);
+            ctx.fill();
+        };
         var resize = function () {
             var rect = canvas.parentElement.getBoundingClientRect();
-            w = rect.width; h = rect.height;
+            w = Math.max(1, Math.round(rect.width));
+            h = Math.max(1, Math.round(rect.height));
             canvas.width = Math.round(w * dpr);
             canvas.height = Math.round(h * dpr);
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
-            var count = w < 640 ? 20 : 42;
-            dots = [];
-            for (var i = 0; i < count; i++) {
-                dots.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.35,
-                    vy: (Math.random() - 0.5) * 0.35,
-                    r: 1 + Math.random() * 1.8
-                });
-            }
-        };
-        var onMove = function (e) {
-            var rect = canvas.getBoundingClientRect();
-            pointer.x = e.clientX - rect.left;
-            pointer.y = e.clientY - rect.top;
-        };
-        var onLeave = function () { pointer.x = -9999; pointer.y = -9999; };
-        var LINK = 96;
-        var step2 = function () {
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            ctx.clearRect(0, 0, w, h);
-            var i, j, d, dx, dy, dist;
-            for (i = 0; i < dots.length; i++) {
-                d = dots[i];
-                d.x += d.vx; d.y += d.vy;
-                if (d.x < -10) d.x = w + 10; if (d.x > w + 10) d.x = -10;
-                if (d.y < -10) d.y = h + 10; if (d.y > h + 10) d.y = -10;
-                dx = d.x - pointer.x; dy = d.y - pointer.y;
-                dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 110 && dist > 0.1) {
-                    d.x += (dx / dist) * 0.6;
-                    d.y += (dy / dist) * 0.6;
-                }
-            }
-            for (i = 0; i < dots.length; i++) {
-                for (j = i + 1; j < dots.length; j++) {
-                    var a = dots[i], b = dots[j];
-                    dist = Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
-                    if (dist < LINK) {
-                        ctx.strokeStyle = 'rgba(47, 125, 95,' + (0.16 * (1 - dist / LINK)).toFixed(3) + ')';
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(a.x, a.y);
-                        ctx.lineTo(b.x, b.y);
-                        ctx.stroke();
-                    }
-                }
-            }
-            ctx.fillStyle = 'rgba(62, 207, 148, 0.4)';
-            for (i = 0; i < dots.length; i++) {
-                d = dots[i];
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            requestAnimationFrame(step2);
+            var count = window.innerWidth < MOBILE_BREAKPOINT ? Math.round(QUANTITY * 0.2) : QUANTITY;
+            particles = [];
+            for (var i = 0; i < count; i++) particles.push(spawn());
         };
-        resize();
-        step2();
-        window.addEventListener('resize', resize);
-        if (FINE) {
-            canvas.parentElement.addEventListener('pointermove', onMove);
-            canvas.parentElement.addEventListener('pointerleave', onLeave);
+        var tick = function () {
+            if (!paused) {
+                ctx.clearRect(0, 0, w, h);
+                var cx = w / 2, cy = h / 2, i, p, denom;
+                for (i = 0; i < particles.length; i++) {
+                    p = particles[i];
+                    p.angle += p.angularSpeed;
+                    p.y -= DRIFT;
+                    if (p.y < -h) { p.y = h; p.radius = Math.random() * Math.max(w, h) * SPREAD_FACTOR; }
+                    else if (p.y > h) { p.y = -h; p.radius = Math.random() * Math.max(w, h) * SPREAD_FACTOR; }
+                    denom = Math.max(1, fov + perspectiveDistance + Math.sin(p.angle) * depthRange);
+                    p.projectedScale = fov / denom;
+                    p.screenX = cx + Math.cos(p.angle) * p.radius * p.projectedScale;
+                    p.screenY = cy + p.y * p.projectedScale;
+                }
+                particles.sort(function (a, b) { return a.projectedScale - b.projectedScale; });
+                for (i = 0; i < particles.length; i++) draw(particles[i]);
+            }
+            requestAnimationFrame(tick);
+        };
+        var onVisibility = function () { paused = document.hidden; };
+        if (typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(resize).observe(canvas);
+        } else {
+            window.addEventListener('resize', resize);
         }
+        if (typeof IntersectionObserver !== 'undefined') {
+            new IntersectionObserver(function (entries) {
+                if (entries[0]) paused = document.hidden || !entries[0].isIntersecting;
+            }, { threshold: 0 }).observe(canvas);
+        }
+        document.addEventListener('visibilitychange', onVisibility);
+        resize();
+        requestAnimationFrame(tick);
     }
 })();
 </script>
+    <div class="pf-pblur" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 </body>
 </html>
